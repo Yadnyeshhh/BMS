@@ -1,0 +1,25 @@
+# Environment configuration (contains sensitive credentials)
+.env
+
+# Compiled binary
+*.exe
+
+# Object files
+*.o
+*.obj
+
+# Build artifacts
+*.out
+*.a
+*.lib
+*.dll
+*.pdb
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Scratch / temp files
+scratch/
