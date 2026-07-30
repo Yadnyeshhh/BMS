@@ -8,7 +8,7 @@
 
 using namespace std;
 
-// Inline helper to load environment configurations from .env
+// env 
 void loadEnv(const string& filename, string& host, string& user, string& password, int& port) {
     ifstream file(filename);
     if (!file.is_open()) return;
@@ -25,7 +25,6 @@ void loadEnv(const string& filename, string& host, string& user, string& passwor
         string key = line.substr(0, pos);
         string val = line.substr(pos + 1);
         
-        // Trim keys and values (including potential double quotes)
         key.erase(0, key.find_first_not_of(" \t\r\n\""));
         size_t key_last = key.find_last_not_of(" \t\r\n\"");
         if (key_last != string::npos) key.erase(key_last + 1);
@@ -57,9 +56,9 @@ int main() {
 
     database::DatabaseManager db;
     if (!db.connect(dbHost, dbUser, dbPassword, dbPort)) {
-        cout << "[ERROR] Database Connection failed: " << db.getLastError() << "\n";
-        cout << "Please ensure MySQL Server is running with the correct credentials.\n";
-        cout << "Press Enter to exit...";
+        cout << "xxxxx [ERROR] Database Connection failed:  xxxxx " << db.getLastError() << "\n";
+        cout << "xxxxx Please ensure MySQL Server is running with the correct credentials. xxxxx\n";
+        cout << "xxxxx Press Enter to exit... xxxxx";
         cin.get();
         return 1;
     }
@@ -101,7 +100,7 @@ int main() {
         cout << "Enter your choice: ";
 
         if (!(cin >> choice)) {
-            cout << "[ERROR] Invalid input. Please enter a number.\n";
+            cout << " xxxxx [ERROR] Invalid input. Please enter a number. xxxxx\n";
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             continue;
