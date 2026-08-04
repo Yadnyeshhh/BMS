@@ -5,6 +5,7 @@
 #include <limits>
 #include <fstream>
 #include <sstream>
+#include <cstdlib> 
 
 using namespace std;
 
@@ -47,12 +48,13 @@ int main() {
     cout << "       WELCOME TO THE BANKING SYSTEM       \n";
     cout << "===========================================\n";
 
-    string dbHost = "localhost";
-    string dbUser = "root";
-    string dbPassword = "Y@du2048";
-    int dbPort = 3306;
+    string dbHost = "";
+    string dbUser = "";
+    string dbPassword = "";
+    int dbPort ;
 
     loadEnv(".env", dbHost, dbUser, dbPassword, dbPort);
+
 
     database::DatabaseManager db;
     if (!db.connect(dbHost, dbUser, dbPassword, dbPort)) {
