@@ -405,4 +405,4 @@ void BankingService::logout(models::Session& session) {
     session.logout();
 }
 
-} // namespace services
+} 
