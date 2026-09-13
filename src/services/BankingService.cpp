@@ -1,5 +1,6 @@
 #include "BankingService.hpp"
 #include "../utils/InputSanitizer.hpp"
+#include "../utils/PasswordHasher.hpp"
 #include <iostream>
 #include <limits>
 #include <iomanip>
@@ -41,6 +42,13 @@ void BankingService::createAccount() {
         return;
     }
     
+    string email;
+    cout << "Enter Email: ";
+    getline(cin, email);
+    if (email.empty()) {
+        cout << "[ERROR] Email cannot be empty.\n";
+        return;
+    }
     string password;
     cout << "Enter Password: ";
     getline(cin, password);
@@ -50,9 +58,11 @@ void BankingService::createAccount() {
     }
     
     string safeName = utils::InputSanitizer::sanitize(db, name);
-    string safePassword = utils::InputSanitizer::sanitize(db, password);
+    string safeEmail = utils::InputSanitizer::sanitize(db, email);
+    string hashedPwd = utils::PasswordHasher::hash(password);
+    string safePassword = utils::InputSanitizer::sanitize(db, hashedPwd);
     
-    string query = "INSERT INTO accounts (name, password, balance) VALUES ('" + safeName + "', '" + safePassword + "', 0.0)";
+    string query = "INSERT INTO accounts (name, email, password, balance) VALUES ('" + safeName + "', '" + safeEmail + "', '" + safePassword + "', 0.0)";
     
     if (!db.executeQuery(query)) {
         cout << "[ERROR] Error creating account: " << db.getLastError() << "\n";
@@ -82,9 +92,10 @@ void BankingService::login(models::Session& session) {
     cout << "Enter Password: ";
     getline(cin, password);
     
-    string safePassword = utils::InputSanitizer::sanitize(db, password);
+    string hashedPwd = utils::PasswordHasher::hash(password);
+    string safePassword = utils::InputSanitizer::sanitize(db, hashedPwd);
     
-    string query = "SELECT name FROM accounts WHERE account_id = " + to_string(accountId) + " AND password = '" + safePassword + "'";
+    string query = "SELECT name, email FROM accounts WHERE account_id = " + to_string(accountId) + " AND password = '" + safePassword + "'";
     
     if (!db.executeQuery(query)) {
         cout << "[ERROR] Database error during login: " << db.getLastError() << "\n";
@@ -99,8 +110,20 @@ void BankingService::login(models::Session& session) {
     
     MYSQL_ROW row = mysql_fetch_row(res);
     if (row) {
+        std::string email = row[1] ? row[1] : "";
         session.login(accountId, row[0]);
         cout << "\n[SUCCESS] Login successful! Welcome back, " << session.accountName << "!\n";
+        if (email.empty()) {
+            string newEmail;
+            cout << "Enter your email (required): ";
+            getline(cin, newEmail);
+            if (!newEmail.empty()) {
+                string safeEmail = utils::InputSanitizer::sanitize(db, newEmail);
+                string updateQuery = "UPDATE accounts SET email = '" + safeEmail + "' WHERE account_id = " + to_string(accountId);
+                db.executeQuery(updateQuery);
+                cout << "[INFO] Email updated.\n";
+            }
+        }
     } else {
         cout << "[ERROR] Invalid Account ID or Password.\n";
     }
@@ -359,7 +382,7 @@ void BankingService::updateAccount(models::Session& session) {
             return;
         }
         string safePassword = utils::InputSanitizer::sanitize(db, newPassword);
-        string query = "UPDATE accounts SET password = '" + safePassword + "' WHERE account_id = " + to_string(session.accountId);
+        string query = "UPDATE accounts SET chant = '" + safePassword + "' WHERE account_id = " + to_string(session.accountId);
         if (!db.executeQuery(query)) {
             cout << "[ERROR] Error updating password: " << db.getLastError() << "\n";
         } else {
