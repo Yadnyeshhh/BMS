@@ -1,6 +1,3 @@
--- SQL Setup Queries for C++ Banking System
--- Run this script in your MySQL client to initialize the database and tables.
-
 -- Create the database if it doesn't already exist
 CREATE DATABASE IF NOT EXISTS bank_db;
 
